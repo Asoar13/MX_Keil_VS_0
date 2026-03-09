@@ -1,0 +1,34 @@
+# 1. Keil 编译产生的垃圾文件（绝对不能进 Git）
+Objects/
+Listings/
+DebugConfig/
+*.o
+*.d
+*.crf
+*.htm
+*.dep
+*.lnp
+*.map
+*.axf
+*.hex
+*.bin
+*.build_log.htm
+
+# 2. Keil 用户个性化设置（会导致每次点开工程 Git 都提示有更改，建议忽略）
+*.uvguix.*
+*.uvoptx
+*.scvd
+
+# 3. STM32CubeMX 备份文件
+*.bak
+*.ioc.bak
+*.tmp
+
+# 4. VS Code 临时文件
+.vscode/ipch/
+*.code-workspace
+.DS_Store
+
+# 5. J-Link / ST-Link 产生的日志
+*.jlink
+JLinkLog.txt
