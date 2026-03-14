@@ -35,8 +35,8 @@ typedef struct {
 } MID_ADC_Handle_t;	// 一个ADC句柄将拥有多个通道
 
 
-void MID_ADC_init(ADC_HandleTypeDef* hadcx);
-uint32_t MID_ADC_getValue(ADC_HandleTypeDef* hadcx, uint16_t range, uint32_t timeout);
+void MID_ADC_init(MID_ADC_Handle_t* hadcx);
+uint32_t MID_ADC_getValue(MID_ADC_Handle_t* hadcx, uint16_t range, uint32_t timeout);
 
 void MID_ADC_initAutoConver_DMA(MID_ADC_Handle_t *h_adc, uint8_t buf_len);
 void MID_ADC_remindUpdate_IRQ(MID_ADC_Handle_t *h_adc);

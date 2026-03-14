@@ -1,6 +1,8 @@
 #ifndef __MID_KEY_H
 #define __MID_KEY_H
 #include "Key/bsp_key.h"
+#include "GPIO/bsp_gpio.h"
+#include "Time/bsp_tick.h"
 
 typedef enum {
 	MID_KEY_FREE = 0,
@@ -11,8 +13,9 @@ typedef enum {
 
 typedef struct {
 	// 配置
-	GPIO_TypeDef *gpiox;	// (手动配置) - 初始化结构体时需要手动配置，作为句柄的控制对象
+	void *gpiox;	// (手动配置) - 初始化结构体时需要手动配置，作为句柄的控制对象
 	uint32_t gpio_pin_key;	// (手动配置) - 初始化结构体时需要手动配置，作为句柄的控制对象
+	BSP_GpioConf_t key_gpio_conf; // (手动配置) - 初始化结构体时需要手动配置，作为句柄的控制对象
 
 	// 状态、记录
 	MID_Key_State key_state; // (软件自动) - 函数自动控制状态机
@@ -35,7 +38,6 @@ uint32_t MID_Key_CheckPressTime(MID_Key_Handle_t *key_config, uint8_t *p_cnt, GP
 /*================================================新版==========================================================*/
 
 void MID_Key_init(MID_Key_Handle_t *hkeyx);
-uint32_t MID_Key_Scan(MID_Key_Handle_t *hkeyx, uint8_t *p_cnt, GPIO_PinState dwon_state,
-		uint32_t press_interval, uint32_t tip_interval);
+uint32_t MID_Key_scan(MID_Key_Handle_t *hkeyx, uint8_t *p_cnt, uint8_t dwon_state, uint32_t press_interval, uint32_t tip_interval);
 
 #endif

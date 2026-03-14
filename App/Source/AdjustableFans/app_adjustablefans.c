@@ -6,6 +6,9 @@
 #include "Moter/mid_tb6612.h"
 #include "Seg/mid_seg.h"
 #include "LowPower/bsp_lowpower.h"
+#include "GPIO/bsp_gpio.h"
+#include "Time/bsp_tick.h"
+
 
 #define _MAX_FREE_TIME_MS (60 * 1000)
 #define _TWINKLE_TIME_MS  (500)
@@ -19,6 +22,16 @@ MID_ADC_Handle_t h_adc_1 = {
 MID_Key_Handle_t h_key_1 = {
 		.gpiox = GPIOB,
 		.gpio_pin_key = GPIO_PIN_8,
+};
+// 切换按键模式的前提
+BSP_GpioConf_t gpio_conf = {
+	.gpiox = GPIOB,
+	.gpio_pin_x = GPIO_PIN_8,
+};
+// 指示灯配置
+BSP_GpioConf_t led_gpio_conf = {
+	.gpiox = GPIOC,
+	.gpio_pin_x = GPIO_PIN_13,
 };
 // 数码管显示
 MID_Seg_Handele_t h_seg_1 = {
@@ -63,7 +76,7 @@ static void _lowPowerMode(PowerCtrl_Func);
 
 void APP_AdjustableFans_init(void)
 {
-	MID_ADC_init(&hadc1);
+	MID_ADC_init(&h_adc_1);
 	MID_Key_init(&h_key_1);
 	MID_Seg_init(&h_seg_1, 4);
 	MID_TB6612_init(&h_tb6612_1);
@@ -72,19 +85,19 @@ void APP_AdjustableFans_init(void)
 void APP_AdjustableFans_process(void)
 {
 	uint8_t times = 0;
-	uint32_t state = MID_Key_Scan(&h_key_1, &times, GPIO_PIN_SET, 300, 100);
+	uint32_t state = MID_Key_scan(&h_key_1, &times, GPIO_PIN_SET, 300, 100);
 
 	/*-------------------------------------工作指示灯-----------------------------------------*/
-	 if(HAL_GetTick() - last_twinkle_tick > _TWINKLE_TIME_MS) {
-		last_twinkle_tick = HAL_GetTick();
-		HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+	 if(BSP_Tick_getCurTick_32() - last_twinkle_tick > _TWINKLE_TIME_MS) {
+		last_twinkle_tick = BSP_Tick_getCurTick_32();
+		BSP_GPIO_togglePin(&led_gpio_conf);
 	 }
 
 	/*--------------------------------------按键选择------------------------------------------*/
 	if(times == 1) { 	// 工作状态切换
 		MID_TB6612_turnOffAndOn(&h_tb6612_1);
 		work_state = work_state ? 0 : 1;
-		last_work_tick = HAL_GetTick();		// 更新记录开始的时间（自动睡眠）
+		last_work_tick = BSP_Tick_getCurTick_32();		// 更新记录开始的时间（自动睡眠）
 	} else if (times == 2) {	// 待机模式
 		_lowPowerMode(_enterSleep);
 	}
@@ -96,18 +109,18 @@ void APP_AdjustableFans_process(void)
 	/*--------------------------------------自动睡眠------------------------------------------*/
 	if(work_state == 1)	//  工作时一直更新记录开始的时间（自动睡眠）
 	{
-		last_work_tick = HAL_GetTick();
+		last_work_tick = BSP_Tick_getCurTick_32();
 	}
 
 	// 非工作状态 且 超时 会触发睡眠
-	if(HAL_GetTick() - last_work_tick > _MAX_FREE_TIME_MS) {	// 达到设置时间自动进入睡眠模式
-		last_work_tick = HAL_GetTick();						// 更新记录开始的时间（自动睡眠）
+	if(BSP_Tick_getCurTick_32() - last_work_tick > _MAX_FREE_TIME_MS) {	// 达到设置时间自动进入睡眠模式
+		last_work_tick = BSP_Tick_getCurTick_32();						// 更新记录开始的时间（自动睡眠）
 		_lowPowerMode(_enterSleep);
 	}
 
 	/*--------------------------------------读修改值------------------------------------------*/
 	MID_Seg_turnOff(&h_seg_1);
-	now_value = MID_ADC_getValue(&hadc1, 200, 100);	// 0-99 正向，100-199 反向
+	now_value = MID_ADC_getValue(&h_adc_1, 200, 100);	// 0-99 正向，100-199 反向
 	now_value = now_value * _RATE + last_value * (1 - _RATE);	// 加权滤波
 	MID_Seg_turnOn(&h_seg_1);
 
@@ -164,8 +177,14 @@ static void _setSpeed(uint8_t speed_duty, uint8_t direct_changed_flag)
 // 睡眠模式仅关闭逻辑计算和检测
 static void _enterSleep()
 {
+	// 显示“SLEP”字样
 	uint8_t seg_sleep[] = {0x6D, 0x38, 0x79, 0x73};
 	MID_Seg_setSeg(&h_seg_1, 0, seg_sleep, 4);
+
+	// 关闭正常工作指示灯
+	BSP_GPIO_setPin(&led_gpio_conf);
+
+	// 进入睡眠模式
 	BSP_LowPower_sleep();
 
 	// 更新显示
@@ -183,16 +202,8 @@ static void _enterStop()
 
 static void _lowPowerMode(PowerCtrl_Func _enterLowPower)
 {
-	// 开启指定引脚中断（为退出sleep准备）
-	GPIO_InitTypeDef gpio_conf;
-	gpio_conf.Mode = GPIO_MODE_IT_RISING;
-	gpio_conf.Pin  = h_key_1.gpio_pin_key;
-	gpio_conf.Speed = GPIO_SPEED_FREQ_HIGH;
-	gpio_conf.Pull = GPIO_PULLDOWN;
-	HAL_GPIO_Init(h_key_1.gpiox, &gpio_conf);
-
-	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 2, 2);
-	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+	// 进入中断模式
+	BSP_GPIO_setMode(&gpio_conf, BSP_PIN_8_RAISING_EXIT_GROUP2_2_2);
 
 	// 关闭systick时钟
 	HAL_SuspendTick();
@@ -201,11 +212,8 @@ static void _lowPowerMode(PowerCtrl_Func _enterLowPower)
 	_enterLowPower();
 
 	// 关闭指定引脚中断（sleep结束就还原）
-	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
-	gpio_conf.Mode = GPIO_MODE_INPUT;
-	gpio_conf.Pin  = h_key_1.gpio_pin_key;
-	gpio_conf.Pull = GPIO_PULLDOWN;
-	HAL_GPIO_Init(h_key_1.gpiox, &gpio_conf);
+	BSP_GPIO_disableEXIT(&gpio_conf, BSP_PIN_8_RAISING_EXIT_GROUP2_2_2);
+	BSP_GPIO_setMode(&gpio_conf, BSP_PIN_IN_PULLDOWN);
 
 	// 开启systick时钟
 	HAL_ResumeTick();
@@ -215,3 +223,5 @@ void EXTI9_5_IRQHandler()
 {
 	HAL_GPIO_EXTI_IRQHandler(h_key_1.gpio_pin_key);
 }
+
+

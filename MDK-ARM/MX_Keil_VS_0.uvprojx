@@ -886,6 +886,16 @@
               <FilePath>..\BSP\Source\Tool\bsp_tool.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BSP\Source\GPIO\bsp_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BSP\ThirdParty\Source\OLED\bsp_oled.c</FilePath>
+            </File>
+            <File>
               <FileName>mid_adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Mid\Source\ADC_DAC\mid_adc.c</FilePath>
@@ -946,11 +956,6 @@
               <FilePath>..\Mid\Source\SPI\mid_nrf24l01.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\BSP\ThirdParty\Source\OLED\bsp_oled.c</FilePath>
-            </File>
-            <File>
               <FileName>mid_bt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Mid\ThirdParty\Source\Bluetooth\mid_bt.c</FilePath>
@@ -984,6 +989,11 @@
               <FileName>mid_oledfont.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Mid\ThirdParty\Source\OLED\mid_oledfont.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_tick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BSP\Source\Time\bsp_tick.c</FilePath>
             </File>
           </Files>
         </Group>

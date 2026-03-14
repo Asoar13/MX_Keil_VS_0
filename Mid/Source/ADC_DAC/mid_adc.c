@@ -6,13 +6,15 @@
 static void MID_ADC_filterADC_DMA(MID_ADC_Handle_t *h_adc, uint8_t select_filter, uint8_t select_deadband);
 
 
-void MID_ADC_init(ADC_HandleTypeDef* hadcx)
+void MID_ADC_init(MID_ADC_Handle_t* h_adc)
 {
+	ADC_HandleTypeDef *hadcx = (ADC_HandleTypeDef*)h_adc->h_adc;
 	BSP_ADC_init(hadcx);
 }
 
-uint32_t MID_ADC_getValue(ADC_HandleTypeDef* hadcx, uint16_t range, uint32_t timeout)
+uint32_t MID_ADC_getValue(MID_ADC_Handle_t* h_adc, uint16_t range, uint32_t timeout)
 {
+	ADC_HandleTypeDef *hadcx = (ADC_HandleTypeDef*)h_adc->h_adc;
 	return range * BSP_ADC_getADCValue(hadcx, timeout) / MID_ADC_MAX;
 }
 
