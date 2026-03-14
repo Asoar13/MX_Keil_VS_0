@@ -1,23 +1,25 @@
 {
     "configurations":[
         {
-            "name": "windows-gcc-x64",
-            "includePath": [
+            "name": "STM32_Keil",
+            "includePath":[
+                "${workspaceFolder}/Core/Inc",
+                "${workspaceFolder}/Drivers/STM32F1xx_HAL_Driver/Inc",
+                "${workspaceFolder}/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy",
+                "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F1xx/Include",
+                "${workspaceFolder}/Drivers/CMSIS/Include",
                 "${workspaceFolder}/**"
             ],
             "defines":[
-                "USE_HAL_DRIVER",   // 定义使用HAL库 (自定义更改的地方)
-                "STM32F103xB"       // 定义目标芯片型号 (自定义更改的地方)
+                "USE_HAL_DRIVER",
+                "STM32F103xB",
+                "__CC_ARM"
             ],
             "compilerPath": "C:/Code_WingW64/mingw64/bin/gcc.exe",
-            "cStandard": "${default}",
-            "cppStandard": "${default}",
-            "intelliSenseMode": "windows-gcc-x64",
-            "compilerArgs": [
-                ""
-            ]
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "windows-gcc-x64"
         }
     ],
     "version": 4
 }
-
