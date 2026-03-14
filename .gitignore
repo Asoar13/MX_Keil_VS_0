@@ -32,3 +32,9 @@ DebugConfig/
 # 5. J-Link / ST-Link 产生的日志
 *.jlink
 JLinkLog.txt
+
+# 6.忽略所有的日志文件
+*.log
+
+# 7.忽略 MDK-ARM 里由插件错误生成的本地配置文件夹
+MDK-ARM/.vscode/
