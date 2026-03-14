@@ -2,6 +2,7 @@
 #define __MID_TB6612_H
 #include "main.h"
 #include "Moter/bsp_moter.h"
+#include "GPIO/bsp_gpio.h"
 
 typedef struct {
 	// PWM控制
@@ -9,13 +10,9 @@ typedef struct {
 	uint32_t TIM_CHANNEL_x; // (手动配置) - 初始化结构体时手动配置，指定PWM产生口
 
 	// GPIO控制
-	GPIO_TypeDef *gpio_stby;	// (手配置动) - 初始化结构体时手动配置
-	uint32_t gpio_pin_stby;		// (手动配置) - 初始化结构体时手动配置
-	GPIO_TypeDef *gpio_ctrl1;	// (手动配置) - 初始化结构体时手动配置
-	uint32_t gpio_pin_ctrl1;	// (手动配置) - 初始化结构体时手动配置
-	GPIO_TypeDef *gpio_ctrl2;	// (手动配置) - 初始化结构体时手动配置
-	uint32_t gpio_pin_ctrl2; 	// (手动配置) - 初始化结构体时手动配置
-
+	BSP_GpioConf_t stby_gpio_conf;	// (手动配置) - 初始化结构体时手动配置
+	BSP_GpioConf_t ctrl1_gpio_conf;	// (手动配置) - 初始化结构体时手动配置
+	BSP_GpioConf_t ctrl2_gpio_conf; // (手动配置) - 初始化结构体时手动配置
 } MID_TB6612_Hanle_t;
 
 void MID_TB6612_init(MID_TB6612_Hanle_t *h_tb6612x);

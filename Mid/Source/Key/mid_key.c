@@ -1,60 +1,60 @@
 #include <Key/mid_key.h>
 
 /*==========================对外开放==============================*/
-MID_Key_Handle_t key_conf = {
-		.gpiox = GPIOA,
-		.gpio_pin_key = GPIO_PIN_11,
-};
+// MID_Key_Handle_t key_conf = {
+// 		.gpiox = GPIOA,
+// 		.gpio_pin_key = GPIO_PIN_11,
+// };
+// 
+// // 配置引脚(一般使用上面的初始化结构体来配置)
+// void MID_Key_pinConfig(MID_Key_Handle_t *key_gpio_conf,
+// 		GPIO_TypeDef *gpiox, uint32_t gpio_pin_key)
+// {
+// 	key_gpio_conf->gpiox = gpiox;
+// 	key_gpio_conf->gpio_pin_key = gpio_pin_key;
+// }
 
-// 配置引脚(一般使用上面的初始化结构体来配置)
-void MID_Key_pinConfig(MID_Key_Handle_t *key_gpio_conf,
-		GPIO_TypeDef *gpiox, uint32_t gpio_pin_key)
-{
-	key_gpio_conf->gpiox = gpiox;
-	key_gpio_conf->gpio_pin_key = gpio_pin_key;
-}
+// // 单次点击（非阻塞）
+// uint8_t MID_Key_onceCheckPinState_unblock(MID_Key_Handle_t *key_gpio_conf, uint16_t detect_time, uint8_t standard_state)
+// {
+// 	uint8_t cnt = 0;
 
-// 单次点击（非阻塞）
-uint8_t MID_Key_onceCheckPinState_unblock(MID_Key_Handle_t *key_gpio_conf, uint16_t detect_time, uint8_t standard_state)
-{
-	uint8_t cnt = 0;
+// 	BSP_Key_checkPinState_unblock(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &cnt, detect_time, standard_state);
 
-	BSP_Key_checkPinState_unblock(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &cnt, detect_time, standard_state);
+// 	return cnt;
+// }
 
-	return cnt;
-}
+// // 单次点击（阻塞）
+// uint8_t MID_Key_onceCheckPinState(MID_Key_Handle_t *key_gpio_conf, uint16_t detect_time, uint8_t standard_state)
+// {
+// 	uint8_t cnt = 0;
 
-// 单次点击（阻塞）
-uint8_t MID_Key_onceCheckPinState(MID_Key_Handle_t *key_gpio_conf, uint16_t detect_time, uint8_t standard_state)
-{
-	uint8_t cnt = 0;
+// 	BSP_Key_checkPinState(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &cnt, detect_time, standard_state);
 
-	BSP_Key_checkPinState(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &cnt, detect_time, standard_state);
+// 	return cnt;
+// }
 
-	return cnt;
-}
+// // 多次点击（阻塞）
+// uint8_t MID_Key_mutipleCheckPinState(MID_Key_Handle_t *key_gpio_conf, uint16_t per_detect_time, uint8_t standard_state)
+// {
+// 	uint8_t cnt = 0;
 
-// 多次点击（阻塞）
-uint8_t MID_Key_mutipleCheckPinState(MID_Key_Handle_t *key_gpio_conf, uint16_t per_detect_time, uint8_t standard_state)
-{
-	uint8_t cnt = 0;
+// 	// 退出条件为 非standard_state保持一个per_detect_time
+// 	while(BSP_KEY_STANDARD == BSP_Key_checkPinState(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &cnt, per_detect_time, standard_state));
 
-	// 退出条件为 非standard_state保持一个per_detect_time
-	while(BSP_KEY_STANDARD == BSP_Key_checkPinState(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &cnt, per_detect_time, standard_state));
+// 	return cnt;
+// }
 
-	return cnt;
-}
+// // 长按统计（阻塞）
+// uint32_t MID_Key_checkContinue(MID_Key_Handle_t *key_gpio_conf, uint8_t standard_state)
+// {
+// 	uint16_t time = 0;
 
-// 长按统计（阻塞）
-uint32_t MID_Key_checkContinue(MID_Key_Handle_t *key_gpio_conf, uint8_t standard_state)
-{
-	uint16_t time = 0;
+// 	// 退出条件为 单次按压超过max_time 或 松开
+// 	BSP_Key_checkContinueState(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &time, standard_state);
 
-	// 退出条件为 单次按压超过max_time 或 松开
-	BSP_Key_checkContinueState(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &time, standard_state);
-
-	return time;
-}
+// 	return time;
+// }
 
 /*================================================新版==========================================================*/
 

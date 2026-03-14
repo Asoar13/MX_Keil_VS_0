@@ -3,15 +3,15 @@
 
 /*===================默认对外句柄=========================*/
 
-MID_TB6612_Hanle_t h_tb6612 = {
-		.h_timx = &htim2,
-		.TIM_CHANNEL_x = TIM_CHANNEL_1,
+// MID_TB6612_Hanle_t h_tb6612 = {
+// 		.h_timx = &htim2,
+// 		.TIM_CHANNEL_x = TIM_CHANNEL_1,
 
-		.gpio_ctrl1 = GPIOB,
-		.gpio_pin_ctrl1 = GPIO_PIN_9,
-		.gpio_ctrl2 = GPIOB,
-		.gpio_pin_ctrl2 = GPIO_PIN_8,
-};
+// 		.gpio_ctrl1 = GPIOB,
+// 		.gpio_pin_ctrl1 = GPIO_PIN_9,
+// 		.gpio_ctrl2 = GPIOB,
+// 		.gpio_pin_ctrl2 = GPIO_PIN_8,
+// };
 
 /*===================默认对外句柄=========================*/
 

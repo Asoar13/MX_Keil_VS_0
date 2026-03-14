@@ -13,8 +13,6 @@ typedef enum {
 
 typedef struct {
 	// 配置
-	void *gpiox;	// (手动配置) - 初始化结构体时需要手动配置，作为句柄的控制对象
-	uint32_t gpio_pin_key;	// (手动配置) - 初始化结构体时需要手动配置，作为句柄的控制对象
 	BSP_GpioConf_t key_gpio_conf; // (手动配置) - 初始化结构体时需要手动配置，作为句柄的控制对象
 
 	// 状态、记录

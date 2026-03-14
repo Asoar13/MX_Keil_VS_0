@@ -7,6 +7,7 @@ static void BSP_Seg_setL(void *gpiox, uint32_t gpio_pin_x)
 	gpio->BSRR = gpio_pin_x << 16;
 }
 
+// 指针转换
 static void BSP_Seg_setH(void *gpiox, uint32_t gpio_pin_x)
 {
 	GPIO_TypeDef *gpio = (GPIO_TypeDef *)gpiox;
@@ -20,7 +21,7 @@ static void BSP_Seg_setH(void *gpiox, uint32_t gpio_pin_x)
 #define BSP_SEG_SET_SDA_H(p_seg_conf) BSP_Seg_setH(p_seg_conf->gpio_sda, p_seg_conf->gpio_pin_sda)
 #define BSP_SEG_SET_SDA_L(p_seg_conf) BSP_Seg_setL(p_seg_conf->gpio_sda, p_seg_conf->gpio_pin_sda)
 
-
+// 软件模拟延时（us级，不会产生较大的速度影响）
 static void BSP_SEG_DELAY_US()
 {
 	uint32_t i = 135;
@@ -29,6 +30,7 @@ static void BSP_SEG_DELAY_US()
 
 /*-------------------------------------------------对外函数接口----------------------------------------------------*/
 
+// 类IIC(这里与IIC一致)时序开始信号
 void BSP_Seg_start(BSP_Seg_GpioConf_t *p_seg_conf)
 {
 	// 归位
@@ -44,6 +46,7 @@ void BSP_Seg_start(BSP_Seg_GpioConf_t *p_seg_conf)
 	BSP_SEG_DELAY_US();
 }
 
+// 类IIC(这里与IIC一致)时序结束信号
 void BSP_Seg_stop(BSP_Seg_GpioConf_t *p_seg_conf)
 {
 	// 归位
@@ -59,6 +62,7 @@ void BSP_Seg_stop(BSP_Seg_GpioConf_t *p_seg_conf)
 	BSP_SEG_DELAY_US();
 }
 
+// 类IIC发送字节（不实际接收回应），9个时序
 void BSP_Seg_transmitByte(BSP_Seg_GpioConf_t *p_seg_conf, uint8_t byte)
 {
 	// 前8个SCK发送

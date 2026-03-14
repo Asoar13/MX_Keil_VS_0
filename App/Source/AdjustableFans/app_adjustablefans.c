@@ -20,8 +20,10 @@ MID_ADC_Handle_t h_adc_1 = {
 };
 // 按键选择
 MID_Key_Handle_t h_key_1 = {
-		.gpiox = GPIOB,
-		.gpio_pin_key = GPIO_PIN_8,
+		.key_gpio_conf = {
+			.gpiox = GPIOB,
+			.gpio_pin_x = GPIO_PIN_8,
+		}
 };
 // 切换按键模式的前提
 BSP_GpioConf_t gpio_conf = {
@@ -35,24 +37,30 @@ BSP_GpioConf_t led_gpio_conf = {
 };
 // 数码管显示
 MID_Seg_Handele_t h_seg_1 = {
-		.p_gpio_conf = {
-				.gpio_sda =     GPIOB,
-				.gpio_pin_sda = GPIO_PIN_13,
-				.gpio_sck =     GPIOB,
-				.gpio_pin_sck = GPIO_PIN_12,
-		},
+	.p_gpio_conf = {
+		.gpio_sda =     GPIOB,
+		.gpio_pin_sda = GPIO_PIN_13,
+		.gpio_sck =     GPIOB,
+		.gpio_pin_sck = GPIO_PIN_12,
+	},
 };
 // tb6612电机控制
 MID_TB6612_Hanle_t h_tb6612_1 = {
-		.h_timx = &htim2,
-		.TIM_CHANNEL_x = TIM_CHANNEL_1,
+	.h_timx = &htim2,
+	.TIM_CHANNEL_x = TIM_CHANNEL_1,
 
-		.gpio_stby =      GPIOA,
-		.gpio_pin_stby =  GPIO_PIN_12,
-		.gpio_ctrl1 =     GPIOA,
-		.gpio_pin_ctrl1 = GPIO_PIN_11,
-		.gpio_ctrl2 =     GPIOA,
-		.gpio_pin_ctrl2 = GPIO_PIN_10,
+	.stby_gpio_conf = {
+		.gpiox = GPIOA,
+		.gpio_pin_x = GPIO_PIN_12,
+	},
+	.ctrl1_gpio_conf = {
+		.gpiox = GPIOA,
+		.gpio_pin_x = GPIO_PIN_10,
+	},
+	.ctrl2_gpio_conf = {
+		.gpiox = GPIOA,
+		.gpio_pin_x = GPIO_PIN_11,
+	},
 };
 
 static uint8_t last_value;
@@ -206,7 +214,7 @@ static void _lowPowerMode(PowerCtrl_Func _enterLowPower)
 	BSP_GPIO_setMode(&gpio_conf, BSP_PIN_8_RAISING_EXIT_GROUP2_2_2);
 
 	// 关闭systick时钟
-	HAL_SuspendTick();
+	BSP_Tick_turnOff();
 
 	// 进入低功耗
 	_enterLowPower();
@@ -216,12 +224,7 @@ static void _lowPowerMode(PowerCtrl_Func _enterLowPower)
 	BSP_GPIO_setMode(&gpio_conf, BSP_PIN_IN_PULLDOWN);
 
 	// 开启systick时钟
-	HAL_ResumeTick();
-}
-
-void EXTI9_5_IRQHandler()
-{
-	HAL_GPIO_EXTI_IRQHandler(h_key_1.gpio_pin_key);
+	BSP_Tick_turnOn();
 }
 
 

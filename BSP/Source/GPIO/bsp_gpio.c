@@ -72,3 +72,13 @@ uint8_t BSP_GPIO_readPin(BSP_GpioConf_t *p_gpio_conf)
     return (GPIOx->IDR & p_gpio_conf->gpio_pin_x) ? 1 : 0;
 }
 
+/* -------------------------------------------GPIO中断函数----------------------------------------------- */
+
+#include "Key/mid_key.h"
+extern MID_Key_Handle_t h_key_1;
+void EXTI9_5_IRQHandler()
+{
+    // APP_AdjustableFans的Key配置的GPIO中断
+	HAL_GPIO_EXTI_IRQHandler(h_key_1.key_gpio_conf.gpio_pin_x);
+}
+
