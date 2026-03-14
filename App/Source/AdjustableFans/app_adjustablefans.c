@@ -56,21 +56,20 @@ static void _segShowNum(uint8_t speed_num, uint8_t direct);
 static void _setSpeed(uint8_t speed_duty, uint8_t direct_changed_flag);
 
 typedef void (*PowerCtrl_Func) (void);
-static void _enterSleep();
-static void _enterStop();
+static void _enterSleep(void);
+static void _enterStop(void);
 static void _lowPowerMode(PowerCtrl_Func);
 
 
-void APP_AdjustableFans_init()
+void APP_AdjustableFans_init(void)
 {
-//	MID_ADC_initAutoConver_DMA(&h_adc_1, 1);
 	MID_ADC_init(&hadc1);
 	MID_Key_init(&h_key_1);
 	MID_Seg_init(&h_seg_1, 4);
 	MID_TB6612_init(&h_tb6612_1);
 }
 
-void APP_AdjustableFans_process(uint8_t *p_cnt, uint8_t *p_times)
+void APP_AdjustableFans_process(void)
 {
 	uint8_t times = 0;
 	uint32_t state = MID_Key_Scan(&h_key_1, &times, GPIO_PIN_SET, 300, 100);
@@ -162,14 +161,19 @@ static void _setSpeed(uint8_t speed_duty, uint8_t direct_changed_flag)
 		MID_TB6612_rotateInReverse(&h_tb6612_1);
 }
 
+// 睡眠模式仅关闭逻辑计算和检测
 static void _enterSleep()
 {
 	uint8_t seg_sleep[] = {0x6D, 0x38, 0x79, 0x73};
 	MID_Seg_setSeg(&h_seg_1, 0, seg_sleep, 4);
 	BSP_LowPower_sleep();
-	direct_change_flag = 1; // 更新
+
+	// 更新显示
+	direct_change_flag = 1; 
+	_segShowNum(speed, now_direct);
 }
 
+// 停止模式下关闭一切显示和控制
 static void _enterStop()
 {
 	MID_Seg_turnOff(&h_seg_1);

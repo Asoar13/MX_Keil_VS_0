@@ -24,6 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "AdjustableFans/app_adjustablefans.h"
 
 /* USER CODE END Includes */
 
@@ -65,7 +66,6 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -91,15 +91,14 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-
+  APP_AdjustableFans_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-      HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-      HAL_Delay(1000);
+    APP_AdjustableFans_process();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

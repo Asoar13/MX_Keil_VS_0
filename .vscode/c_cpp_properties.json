@@ -8,6 +8,9 @@
                 "${workspaceFolder}/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy",
                 "${workspaceFolder}/Drivers/CMSIS/Device/ST/STM32F1xx/Include",
                 "${workspaceFolder}/Drivers/CMSIS/Include",
+                "${workspaceFolder}/App/Include", 
+                "${workspaceFolder}/BSP/Include", 
+                "${workspaceFolder}/Mid/Include",
                 "${workspaceFolder}/**"
             ],
             "defines":[
