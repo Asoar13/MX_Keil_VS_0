@@ -1,13 +1,21 @@
 #include "Seg/bsp_seg.h"
 
-// 指针转换
+/**
+ * @brief  指针转换并设置电平为低
+ * @param  无
+ * @retval 无
+ */
 static void BSP_Seg_setL(void *gpiox, uint32_t gpio_pin_x)
 {
 	GPIO_TypeDef *gpio = (GPIO_TypeDef *)gpiox;
 	gpio->BSRR = gpio_pin_x << 16;
 }
 
-// 指针转换
+/**
+ * @brief  指针转换并设置电平为高
+ * @param  无
+ * @retval 无
+ */
 static void BSP_Seg_setH(void *gpiox, uint32_t gpio_pin_x)
 {
 	GPIO_TypeDef *gpio = (GPIO_TypeDef *)gpiox;
@@ -21,7 +29,12 @@ static void BSP_Seg_setH(void *gpiox, uint32_t gpio_pin_x)
 #define BSP_SEG_SET_SDA_H(p_seg_conf) BSP_Seg_setH(p_seg_conf->gpio_sda, p_seg_conf->gpio_pin_sda)
 #define BSP_SEG_SET_SDA_L(p_seg_conf) BSP_Seg_setL(p_seg_conf->gpio_sda, p_seg_conf->gpio_pin_sda)
 
-// 软件模拟延时（us级，不会产生较大的速度影响）
+/**
+ * @brief  软件模拟延迟
+ * @param  无
+ * @retval 无
+ * @note   us级阻塞对系统影响不大
+ */
 static void BSP_SEG_DELAY_US()
 {
 	uint32_t i = 135;
@@ -30,7 +43,11 @@ static void BSP_SEG_DELAY_US()
 
 /*-------------------------------------------------对外函数接口----------------------------------------------------*/
 
-// 类IIC(这里与IIC一致)时序开始信号
+/**
+ * @brief  类IIC(这里与IIC一致)时序开始信号
+ * @param  p_seg_conf: 类IIC的SDA和SCK线绑定GPIO
+ * @retval 无
+ */
 void BSP_Seg_start(BSP_Seg_GpioConf_t *p_seg_conf)
 {
 	// 归位
@@ -46,10 +63,14 @@ void BSP_Seg_start(BSP_Seg_GpioConf_t *p_seg_conf)
 	BSP_SEG_DELAY_US();
 }
 
-// 类IIC(这里与IIC一致)时序结束信号
+/**
+ * @brief  类IIC(这里与IIC一致)时序结束信号
+ * @param  p_seg_conf: 类IIC的SDA和SCK线绑定GPIO
+ * @retval 无
+ */
 void BSP_Seg_stop(BSP_Seg_GpioConf_t *p_seg_conf)
 {
-	// 归位
+	// 归位  
 	BSP_SEG_SET_SDA_L(p_seg_conf);	// 数据下拉
 	BSP_SEG_SET_SCK_L(p_seg_conf);	// 时钟下拉
 	BSP_SEG_DELAY_US();
@@ -62,7 +83,13 @@ void BSP_Seg_stop(BSP_Seg_GpioConf_t *p_seg_conf)
 	BSP_SEG_DELAY_US();
 }
 
-// 类IIC发送字节（不实际接收回应），9个时序
+/**
+ * @brief  类IIC发送字节（不实际接收回应），9个时序
+ * @param  p_seg_conf: 类IIC的SDA和SCK线绑定GPIO
+ * @param  byte: 被发送的字节
+ * @retval 无
+ * @note   不接受回应，只是完成时序，并未读取
+ */
 void BSP_Seg_transmitByte(BSP_Seg_GpioConf_t *p_seg_conf, uint8_t byte)
 {
 	// 前8个SCK发送

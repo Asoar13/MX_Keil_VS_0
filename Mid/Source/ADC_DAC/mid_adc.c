@@ -1,8 +1,6 @@
 #include "ADC_DAC/mid_adc.h"
 #include <string.h>
 
-#define MID_ADC_MAX	4095
-
 static void MID_ADC_filterADC_DMA(MID_ADC_Handle_t *h_adc, uint8_t select_filter, uint8_t select_deadband);
 
 /**
@@ -26,7 +24,7 @@ void MID_ADC_init(MID_ADC_Handle_t* h_adc)
 uint32_t MID_ADC_getValue(MID_ADC_Handle_t* h_adc, uint16_t range, uint32_t timeout)
 {
 	ADC_HandleTypeDef *hadcx = (ADC_HandleTypeDef*)h_adc->h_adc;
-	return range * BSP_ADC_getADCValue(hadcx, timeout) / MID_ADC_MAX;
+	return range * BSP_ADC_getADCValue(hadcx, timeout) / BSP_ADC_MAX;
 }
 
 /**
@@ -89,7 +87,7 @@ uint16_t MID_ADC_getADCValue(MID_ADC_Handle_t *h_adc, uint8_t rank_x, uint16_t r
 	// 检查
 	if(rank_x <= 0 || !h_adc) return 0;
 
-	return h_adc->channel_table[rank_x - 1].valid_value * range / MID_ADC_MAX;
+	return h_adc->channel_table[rank_x - 1].valid_value * range / BSP_ADC_MAX;
 }
 
 /**
@@ -114,7 +112,7 @@ static void MID_ADC_filterADC_DMA(MID_ADC_Handle_t *h_adc, uint8_t select_filter
 			channelx->win_sum -= channelx->win_buf[channelx->win_idx];
 
 			// 溢出检查( +100扩大缓冲)
-			channelx->win_sum = (channelx->win_sum > MID_ADC_MAX * MID_ADC_WIN_SIZE + 100) ? 0: channelx->win_sum;
+			channelx->win_sum = (channelx->win_sum > BSP_ADC_MAX * MID_ADC_WIN_SIZE + 100) ? 0: channelx->win_sum;
 
 			// 再更新窗口记录
 			channelx->win_buf[channelx->win_idx] = new_value;

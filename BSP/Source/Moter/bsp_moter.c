@@ -3,18 +3,33 @@
 
 /*===================默认对外句柄=========================*/
 
-// MID_TB6612_Hanle_t h_tb6612 = {
-// 		.h_timx = &htim2,
-// 		.TIM_CHANNEL_x = TIM_CHANNEL_1,
+// 默认格式
+// MID_TB6612_Hanle_t h_tb6612_x = {
+// 	.h_timx = &htim2,
+// 	.TIM_CHANNEL_x = TIM_CHANNEL_1,
 
-// 		.gpio_ctrl1 = GPIOB,
-// 		.gpio_pin_ctrl1 = GPIO_PIN_9,
-// 		.gpio_ctrl2 = GPIOB,
-// 		.gpio_pin_ctrl2 = GPIO_PIN_8,
+// 	.stby_gpio_conf = {
+// 		.gpiox = GPIOA,
+// 		.gpio_pin_x = GPIO_PIN_12,
+// 	},
+// 	.ctrl1_gpio_conf = {
+// 		.gpiox = GPIOA,
+// 		.gpio_pin_x = GPIO_PIN_10,
+// 	},
+// 	.ctrl2_gpio_conf = {
+// 		.gpiox = GPIOA,
+// 		.gpio_pin_x = GPIO_PIN_11,
+// 	},
 // };
 
 /*===================默认对外句柄=========================*/
 
+/**
+ * @brief  初始化，启动PWM
+ * @param  htim_x: 定时器句柄
+ * @param  TIM_CHANNEL_x: 定时器通道
+ * @retval 无
+ */
 void BSP_Moter_init(void *htim_x, uint32_t TIM_CHANNEL_x)
 {
 	TIM_HandleTypeDef *htimx = (TIM_HandleTypeDef*)htim_x;
@@ -22,8 +37,14 @@ void BSP_Moter_init(void *htim_x, uint32_t TIM_CHANNEL_x)
 	HAL_TIM_PWM_Start(htimx, TIM_CHANNEL_x);
 }
 
-// 由PSC和ARR共同决定
-// 只改变PSC保证ARR不变，不影响Period来修改频率
+/**
+ * @brief  初始化，启动PWM
+ * @param  htim_x: 定时器句柄
+ * @param  TIM_CHANNEL_x: 定时器通道
+ * @param  freq: 提供的PWM波的频率
+ * @note   freq由PSC和ARR共同决定，只改变PSC保证ARR不变，不影响Period来修改频率
+ * @retval 无
+ */
 void BSP_Moter_setFreq(void *htim_x, uint32_t TIM_CHANNEL_x, uint32_t freq)
 {
 	TIM_HandleTypeDef *htimx = (TIM_HandleTypeDef*)htim_x;
@@ -35,8 +56,14 @@ void BSP_Moter_setFreq(void *htim_x, uint32_t TIM_CHANNEL_x, uint32_t freq)
 	htimx->Instance->PSC = psc - 1;
 }
 
-// 仅由ARR决定
-// ARR与PSC相反倍增，ARR * PSC不变，保证Freq不变
+/**
+ * @brief  初始化，启动PWM
+ * @param  htim_x: 定时器句柄
+ * @param  TIM_CHANNEL_x: 定时器通道
+ * @param  period: 提供的PWM波的周期(占空比分母)
+ * @note   period仅由ARR决定，ARR与PSC相反倍增，ARR * PSC不变，保证Freq不变
+ * @retval 无
+ */
 void BSP_Moter_setPeriod(void *htim_x, uint32_t TIM_CHANNEL_x, uint32_t period)
 {
 	TIM_HandleTypeDef *htimx = (TIM_HandleTypeDef*)htim_x;
@@ -46,8 +73,14 @@ void BSP_Moter_setPeriod(void *htim_x, uint32_t TIM_CHANNEL_x, uint32_t period)
 	htimx->Instance->ARR = period - 1;
 }
 
-// 仅由Compare决定
-// 设置compare即可
+/**
+ * @brief  初始化，启动PWM
+ * @param  htim_x: 定时器句柄
+ * @param  TIM_CHANNEL_x: 定时器通道
+ * @param  duty: 提供的PWM波的占空比(占空比分子)
+ * @note   duty仅由Compare决定
+ * @retval 无
+ */
 void BSP_Moter_setDuty(void *htim_x, uint32_t TIM_CHANNEL_x, uint32_t duty)
 {
 	TIM_HandleTypeDef *htimx = (TIM_HandleTypeDef*)htim_x;
@@ -55,19 +88,3 @@ void BSP_Moter_setDuty(void *htim_x, uint32_t TIM_CHANNEL_x, uint32_t duty)
 	__HAL_TIM_SET_COMPARE(htimx, TIM_CHANNEL_x, duty);
 }
 
-void BSP_Moter_togglePin(void *gpiox, uint32_t gpio_pin_x)
-{
-	HAL_GPIO_TogglePin((GPIO_TypeDef *)gpiox, gpio_pin_x);
-}
-
-void BSP_Moter_setPin_L(void *gpiox, uint32_t gpio_pin_x)
-{
-	GPIO_TypeDef *gpio = (GPIO_TypeDef *)gpiox;
-	gpio->BSRR = gpio_pin_x << 16;
-}
-
-void BSP_Moter_setPin_H(void *gpiox, uint32_t gpio_pin_x)
-{
-	GPIO_TypeDef *gpio = (GPIO_TypeDef *)gpiox;
-	gpio->BSRR = gpio_pin_x;
-}

@@ -3,7 +3,7 @@
 /*==========================对外开放==============================*/
 
 // 初始化示例
-MID_Key_Handle_t h_key_1 = {
+MID_Key_Handle_t h_key_x = {
 		.key_gpio_conf = {
 			.gpiox = GPIOB,
 			.gpio_pin_x = GPIO_PIN_8,
@@ -25,15 +25,15 @@ void MID_Key_init(MID_Key_Handle_t *hkeyx)
 	hkeyx->end_tick = 0;
 }
 
-/* @brief 按下计次统计 + 按下时长统计 + 按下中状态提示（非阻塞）
- * @param hkeyx key的配置和状态句柄
- * @param p_cnt 计数变量的地址
- * @param dwon_state key什么状态表示按下
- * @param press_interval 前后两次按下的间隔(ms)（越小，连击就越需要快，不然会断开）
- * @param tip_interval 在按下状态时，给外界提示的间隔(ms)
- * @retval [0, 1] "0" 代表此次无效, "1" 为按下状态提示
- * 		   (1, max] 除0/1之外的数字就是按下时长
- */
+/** @brief 按下计次统计 + 按下时长统计 + 按下中状态提示（非阻塞）
+  * @param hkeyx key的配置和状态句柄
+  * @param p_cnt 计数变量的地址
+  * @param dwon_state key什么状态表示按下
+  * @param press_interval 前后两次按下的间隔(ms)（越小，连击就越需要快，不然会断开）
+  * @param tip_interval 在按下状态时，给外界提示的间隔(ms)
+  * @retval [0, 1] "0" 代表此次无效, "1" 为按下状态提示
+  * 		   (1, max] 除0/1之外的数字就是按下时长
+  */
 uint32_t MID_Key_scan(MID_Key_Handle_t *hkeyx, uint8_t *p_cnt, uint8_t dwon_state,
 		uint32_t press_interval, uint32_t tip_interval)
 {
