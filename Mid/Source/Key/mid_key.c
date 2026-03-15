@@ -1,64 +1,22 @@
 #include <Key/mid_key.h>
 
 /*==========================对外开放==============================*/
-// MID_Key_Handle_t key_conf = {
-// 		.gpiox = GPIOA,
-// 		.gpio_pin_key = GPIO_PIN_11,
-// };
-// 
-// // 配置引脚(一般使用上面的初始化结构体来配置)
-// void MID_Key_pinConfig(MID_Key_Handle_t *key_gpio_conf,
-// 		GPIO_TypeDef *gpiox, uint32_t gpio_pin_key)
-// {
-// 	key_gpio_conf->gpiox = gpiox;
-// 	key_gpio_conf->gpio_pin_key = gpio_pin_key;
-// }
 
-// // 单次点击（非阻塞）
-// uint8_t MID_Key_onceCheckPinState_unblock(MID_Key_Handle_t *key_gpio_conf, uint16_t detect_time, uint8_t standard_state)
-// {
-// 	uint8_t cnt = 0;
-
-// 	BSP_Key_checkPinState_unblock(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &cnt, detect_time, standard_state);
-
-// 	return cnt;
-// }
-
-// // 单次点击（阻塞）
-// uint8_t MID_Key_onceCheckPinState(MID_Key_Handle_t *key_gpio_conf, uint16_t detect_time, uint8_t standard_state)
-// {
-// 	uint8_t cnt = 0;
-
-// 	BSP_Key_checkPinState(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &cnt, detect_time, standard_state);
-
-// 	return cnt;
-// }
-
-// // 多次点击（阻塞）
-// uint8_t MID_Key_mutipleCheckPinState(MID_Key_Handle_t *key_gpio_conf, uint16_t per_detect_time, uint8_t standard_state)
-// {
-// 	uint8_t cnt = 0;
-
-// 	// 退出条件为 非standard_state保持一个per_detect_time
-// 	while(BSP_KEY_STANDARD == BSP_Key_checkPinState(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &cnt, per_detect_time, standard_state));
-
-// 	return cnt;
-// }
-
-// // 长按统计（阻塞）
-// uint32_t MID_Key_checkContinue(MID_Key_Handle_t *key_gpio_conf, uint8_t standard_state)
-// {
-// 	uint16_t time = 0;
-
-// 	// 退出条件为 单次按压超过max_time 或 松开
-// 	BSP_Key_checkContinueState(key_gpio_conf->gpiox, key_gpio_conf->gpio_pin_key, &time, standard_state);
-
-// 	return time;
-// }
+// 初始化示例
+MID_Key_Handle_t h_key_1 = {
+		.key_gpio_conf = {
+			.gpiox = GPIOB,
+			.gpio_pin_x = GPIO_PIN_8,
+		}
+};
 
 /*================================================新版==========================================================*/
 
-// 清空按键记录，置位空闲状态
+/**
+  * @brief  清除句柄中的记录数据，初始化句柄
+  * @param  hkeyx: key的结构体，绑定被修改的key信息
+  * @retval 无
+  */
 void MID_Key_init(MID_Key_Handle_t *hkeyx)
 {
 	hkeyx->key_state = MID_KEY_FREE;

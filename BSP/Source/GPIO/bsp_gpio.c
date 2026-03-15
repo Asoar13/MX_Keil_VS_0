@@ -4,7 +4,7 @@
   * @brief  按照指定参数配置gpio-pin的模式（中断则自动进入）
   * @param  p_gpio_conf：gpio的结构体，绑定被修改的gpio-pin信息
   * @param  pin_mode：类型很多，参考BSP_PinMode_t定义
-  * @note   模式比较多，暂时不全 
+  * @note   模式比较多，暂时不全
   * @retval 无
   */
 void BSP_GPIO_setMode(BSP_GpioConf_t *p_gpio_conf, BSP_PinMode_t pin_mode)
@@ -48,24 +48,45 @@ void BSP_GPIO_disableEXIT(BSP_GpioConf_t *p_gpio_conf, BSP_PinMode_t pin_mode)
     }
 }
 
+/**
+  * @brief  反转指定引脚的电平
+  * @param  p_gpio_conf：gpio的结构体，绑定被修改的gpio-pin信息
+  * @retval 无
+  */
 void BSP_GPIO_togglePin(BSP_GpioConf_t *p_gpio_conf)
 {
     GPIO_TypeDef *GPIOx = (GPIO_TypeDef*)p_gpio_conf->gpiox;
     HAL_GPIO_TogglePin(GPIOx, p_gpio_conf->gpio_pin_x);
 }
 
+/**
+  * @brief  将指定引脚设为低电平
+  * @param  p_gpio_conf：gpio的结构体，绑定被修改的gpio-pin信息
+  * @retval 无
+  */
 void BSP_GPIO_resetPin(BSP_GpioConf_t *p_gpio_conf)
 {
     GPIO_TypeDef *GPIOx = (GPIO_TypeDef*)p_gpio_conf->gpiox;
     GPIOx->BSRR = p_gpio_conf->gpio_pin_x << 16;
 }
 
+/**
+  * @brief  将指定引脚设为高电平
+  * @param  p_gpio_conf：gpio的结构体，绑定被修改的gpio-pin信息
+  * @retval 无
+  */
 void BSP_GPIO_setPin(BSP_GpioConf_t *p_gpio_conf)
 {
     GPIO_TypeDef *GPIOx = (GPIO_TypeDef*)p_gpio_conf->gpiox;
     GPIOx->BSRR = p_gpio_conf->gpio_pin_x;
 }
 
+/**
+  * @brief  将返回指定引脚的电平
+  * @param  p_gpio_conf：gpio的结构体，绑定被修改的gpio-pin信息
+  * @retval 0： 低电平
+  * @retval 1： 高电平
+  */
 uint8_t BSP_GPIO_readPin(BSP_GpioConf_t *p_gpio_conf)
 {
     GPIO_TypeDef *GPIOx = (GPIO_TypeDef*)p_gpio_conf->gpiox;

@@ -1,6 +1,6 @@
 {
     "configurations":[
-        {
+    {
             "name": "STM32_Keil",
             "includePath":[
                 "${workspaceFolder}/Core/Inc",
@@ -11,18 +11,18 @@
                 "${workspaceFolder}/App/Include", 
                 "${workspaceFolder}/BSP/Include", 
                 "${workspaceFolder}/Mid/Include",
-                "${workspaceFolder}/**"
-            ],
+        "${workspaceFolder}/**"
+      ],
             "defines":[
-                "USE_HAL_DRIVER",
-                "STM32F103xB",
-                "__CC_ARM"
-            ],
-            "compilerPath": "C:/Code_WingW64/mingw64/bin/gcc.exe",
+        "USE_HAL_DRIVER",
+        "STM32F103xB",
+        "__CC_ARM"
+      ],
+      "compilerPath": "C:/Code_WingW64/mingw64/bin/gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++14",
-            "intelliSenseMode": "windows-gcc-x64"
-        }
-    ],
-    "version": 4
+      "intelliSenseMode": "windows-gcc-x64"
+    }
+  ],
+  "version": 4
 }

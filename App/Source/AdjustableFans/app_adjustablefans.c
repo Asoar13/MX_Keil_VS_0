@@ -82,14 +82,22 @@ static void _enterStop(void);
 static void _lowPowerMode(PowerCtrl_Func);
 
 
+/**
+  * @brief  在main函数的初始化部分的函数，初始化ADC的电位器、按键、数码管、电机驱动(非DMA)
+  * @retval 无
+  */
 void APP_AdjustableFans_init(void)
 {
 	MID_ADC_init(&h_adc_1);
 	MID_Key_init(&h_key_1);
-	MID_Seg_init(&h_seg_1, 4);
+	MID_TM1637_init(&h_seg_1, 4);
 	MID_TB6612_init(&h_tb6612_1);
 }
 
+/**
+  * @brief  处于while中的函数，同时处理按键读取、指示灯控制、自动睡眠计时
+  * @retval 无
+  */
 void APP_AdjustableFans_process(void)
 {
 	uint8_t times = 0;
@@ -127,10 +135,10 @@ void APP_AdjustableFans_process(void)
 	}
 
 	/*--------------------------------------读修改值------------------------------------------*/
-	MID_Seg_turnOff(&h_seg_1);
+	MID_TM1637_turnOff(&h_seg_1);
 	now_value = MID_ADC_getValue(&h_adc_1, 200, 100);	// 0-99 正向，100-199 反向
 	now_value = now_value * _RATE + last_value * (1 - _RATE);	// 加权滤波
-	MID_Seg_turnOn(&h_seg_1);
+	MID_TM1637_turnOn(&h_seg_1);
 
 	// 修改设置（值更新才设置新速度，方向改变才更新显示和方向）
 	uint16_t d = (now_value > last_value) ? now_value - last_value : last_value - now_value;
@@ -153,28 +161,46 @@ void APP_AdjustableFans_process(void)
 	}
 }
 
+/**
+  * @brief  处于中断函数的函数，仅用于产生提示(与DMA联动)
+  * @retval 无
+  */
 void APP_AdjustaleFans_ADC_DMA_IRQ()
 {
 	MID_ADC_remindUpdate_IRQ(&h_adc_1);
 }
 
+/**
+  * @brief  指定数码管的显示(前两位表示方向，后两位显示数字)
+  * @param  speed_num: 被显示的数字
+  * @param  direct: 要求的方向
+  * @note   方向仅在被修改时才重新显示，数字在每次被调用都更新显示
+  * @retval 无
+  */
 static void _segShowNum(uint8_t speed_num, uint8_t direct)
 {
 	// 后两位是数字
-	MID_Seg_setPosAndNum(&h_seg_1, 2, speed_num, 2, 0);
+	MID_TM1637_setPosAndNum(&h_seg_1, 2, speed_num, 2, 0);
 
 	// 前两位表示方向
 	if(direct_change_flag || !speed) {
 		if(now_direct == 0) {
 			uint8_t seg_1[] = {0x4F, 0x4F};
-			MID_Seg_setSeg(&h_seg_1, 0, seg_1, 2);
+			MID_TM1637_setSeg(&h_seg_1, 0, seg_1, 2);
 		} else if(now_direct == 1) {
 			uint8_t seg_0[] = {0x79, 0x79};
-			MID_Seg_setSeg(&h_seg_1, 0, seg_0, 2);
+			MID_TM1637_setSeg(&h_seg_1, 0, seg_0, 2);
 		}
 	}
 }
 
+/**
+  * @brief  指定电机的速度
+  * @param  speed_duty: 输出功率占比(与速度类似正比)
+  * @param  direct_changed_flag: 方向是否改变
+  * @note   方向仅在被修改时才改变
+  * @retval 无
+  */
 static void _setSpeed(uint8_t speed_duty, uint8_t direct_changed_flag)
 {
 	MID_TB6612_setSpeedDuty(&h_tb6612_1, speed_duty);
@@ -182,12 +208,15 @@ static void _setSpeed(uint8_t speed_duty, uint8_t direct_changed_flag)
 		MID_TB6612_rotateInReverse(&h_tb6612_1);
 }
 
-// 睡眠模式仅关闭逻辑计算和检测
+/**
+  * @brief  睡眠模式仅关闭逻辑计算和检测
+  * @retval 无
+  */
 static void _enterSleep()
 {
 	// 显示“SLEP”字样
 	uint8_t seg_sleep[] = {0x6D, 0x38, 0x79, 0x73};
-	MID_Seg_setSeg(&h_seg_1, 0, seg_sleep, 4);
+	MID_TM1637_setSeg(&h_seg_1, 0, seg_sleep, 4);
 
 	// 关闭正常工作指示灯
 	BSP_GPIO_setPin(&led_gpio_conf);
@@ -200,14 +229,22 @@ static void _enterSleep()
 	_segShowNum(speed, now_direct);
 }
 
-// 停止模式下关闭一切显示和控制
+/**
+  * @brief  停止模式下关闭一切显示和控制
+  * @retval 无
+  */
 static void _enterStop()
 {
-	MID_Seg_turnOff(&h_seg_1);
+	MID_TM1637_turnOff(&h_seg_1);
 	BSP_LowPower_stop();
-	MID_Seg_turnOn(&h_seg_1);
+	MID_TM1637_turnOn(&h_seg_1);
 }
 
+/**
+  * @brief  开启中断并进入低功耗模式
+  * @param  _enterLowPower: 低功耗模式的选择(睡眠模式和停机模式)
+  * @retval 无
+  */
 static void _lowPowerMode(PowerCtrl_Func _enterLowPower)
 {
 	// 进入中断模式
@@ -219,7 +256,7 @@ static void _lowPowerMode(PowerCtrl_Func _enterLowPower)
 	// 进入低功耗
 	_enterLowPower();
 
-	// 关闭指定引脚中断（sleep结束就还原）
+	// 关闭指定引脚中断，并还原引脚（sleep结束就还原）
 	BSP_GPIO_disableEXIT(&gpio_conf, BSP_PIN_8_RAISING_EXIT_GROUP2_2_2);
 	BSP_GPIO_setMode(&gpio_conf, BSP_PIN_IN_PULLDOWN);
 
